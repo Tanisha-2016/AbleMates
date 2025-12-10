@@ -4,7 +4,7 @@ import {UsersListWrapper} from './categorys-list/CategorysList'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
-    title: 'Product  Management',
+    title: 'User  Management',
     path: '/category-management/categories',
     isSeparator: false,
     isActive: false,

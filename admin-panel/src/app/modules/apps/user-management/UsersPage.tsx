@@ -5,7 +5,7 @@ import {UsersListWrapper} from './users-list/UsersList'
 const usersBreadcrumbs: Array<PageLink> = [
   {
     title: 'User Management',
-    path: '/apps/user-management/users',
+    path: '/user-management/users',
     isSeparator: false,
     isActive: false,
   },
