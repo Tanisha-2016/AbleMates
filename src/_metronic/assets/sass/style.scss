@@ -1,0 +1,115 @@
+//
+// Theme style
+//
+
+// Initialize
+@import 'init';
+
+// Components
+@import './core/components/components';
+@import 'components/components';
+
+// Layout
+@import './core/layout/base/layout';
+@import 'layout/layout';
+
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light background on hover */
+  border-color: #007bff; /* Change border color on hover */
+}
+
+.btn:hover .kt-icon {
+  color: #007bff; /* Change icon color on hover if needed */
+}
+/* src/app/pages/dashboard/CreateProduct.css */
+.product-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-form h2 {
+  grid-column: span 2;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.product-form input,
+.product-form select,
+.product-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+.product-form input:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.form-buttons {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-save {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+  background-color: #0056b3;
+}
+
+.btn-cancel {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #b0b0b0;
+}
+.dashed-border {
+  border: 2px dashed #181e1f !important; /* Change the color as needed */
+  color: #181e1f !important; /* Optional: change text color to match the border */
+  background-color: transparent; /* Keep background transparent */
+  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease; /* Smooth transition */
+}
+
+.dashed-border:hover {
+  border: none !important;
+  background-color: #007bff !important; /* Change background color on hover */
+  color: white !important; /* Change text color on hover */
+}
+
+.lh-25 {
+  line-height: 25px !important;
+}
+
+.link-primary {
+  color: #0098ca !important;
+}
+
+.link-primary:hover {
+  color: #0056b3 !important;
+  text-decoration: underline;
+}
