@@ -16,33 +16,49 @@ const usersColumns: ReadonlyArray<Column<User>> = [
     Cell: ({...props}) => <UserSelectionCell id={props.data[props.row.index].id} />,
   },
   {
-    Header: (props) => <UserCustomHeader tableProps={props} title='Name' className='min-w-125px' />,
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='Product' className='min-w-125px' />
+    ),
     id: 'name',
     Cell: ({...props}) => <UserInfoCell user={props.data[props.row.index]} />,
   },
   {
-    Header: (props) => <UserCustomHeader tableProps={props} title='Role' className='min-w-125px' />,
+    Header: (props) => <UserCustomHeader tableProps={props} title='Sku' className='min-w-125px' />,
     accessor: 'role',
   },
   {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='Last login' className='min-w-125px' />
+      <UserCustomHeader tableProps={props} title='Category' className='min-w-125px' />
     ),
     id: 'last_login',
     Cell: ({...props}) => <UserLastLoginCell last_login={props.data[props.row.index].last_login} />,
   },
   {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='Two steps' className='min-w-125px' />
+      <UserCustomHeader tableProps={props} title='Brand' className='min-w-125px' />
     ),
     id: 'two_steps',
     Cell: ({...props}) => <UserTwoStepsCell two_steps={props.data[props.row.index].two_steps} />,
   },
   {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='Joined day' className='min-w-125px' />
+      <UserCustomHeader tableProps={props} title='Price' className='min-w-125px' />
     ),
     accessor: 'joined_day',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='Unit' className='min-w-125px' />,
+    accessor: 'price',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='Qty' className='min-w-125px' />,
+    accessor: 'haidar',
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='Created by' className='min-w-125px' />
+    ),
+    accessor: 'f',
   },
   {
     Header: (props) => (
