@@ -22,3 +22,15 @@ export const registerValidationRules = {
 
 };
 
+export const loginValidationRules = {
+  email_or_phone: { 
+    required: true,
+    message: "Email or phone is required"
+  },
+  password: {
+    required: true,
+    message: "Password is required"
+  }
+};
+
+

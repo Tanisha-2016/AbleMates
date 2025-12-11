@@ -1,11 +1,10 @@
 
-
 import { Request, Response } from "express";
-import { registerService } from "./authService";
-import { registerValidationRules } from "../../validations/authValidations";
+import { registerService, loginService } from "./authService";
+import { registerValidationRules, loginValidationRules } from "../../validations/authValidations";
 import { validateFields } from "../../utils/validator";
 import { error, success } from "../../middleware/responseHandler";
-
+import { userModel } from "../../models/userModel";
 // Countries & Provinces JSON
 import countries from "../../data/countries.json";
 import provincesData from "../../data/provinces.json";
@@ -87,5 +86,73 @@ export const getProvinces = (req: Request, res: Response) => {
 
   } catch (err: any) {
     return error(res, err.message || "Failed to fetch provinces", 500);
+  }
+};
+
+export const verifyMobileController = async (req: Request, res: Response) => {
+  try {
+    const body = req.body || {}; 
+    const { phone } = body;
+
+    if (!phone || phone === "") {
+      return error(res, "Phone number is required", 400, {
+        phone: "Phone number is required"
+      });
+    }
+
+    const user = await userModel.findByPhone(phone);
+
+    if (!user) {
+      return error(res, "User not found with this phone number", 404);
+    }
+
+    if (user.is_mobile_verified) {
+      return success(res, "Mobile already verified", {
+        phone,
+        verified: true
+      });
+    }
+
+    await userModel.updateById(user.id, {
+      is_mobile_verified: true,
+      mobile_verified_at: new Date().toISOString(),
+    });
+
+    const updatedUser = await userModel.findById(user.id);
+
+    return success(res, "Mobile verified successfully", updatedUser);
+
+  } catch (err: any) {
+    return error(res, err.message || "Mobile verification failed", 500);
+  }
+};
+
+
+export const loginController = async (req: Request, res: Response) => {
+  try {
+    const body = req.body || {};
+
+    // Validate input
+    const validationErrors = validateFields(body, loginValidationRules);
+
+    if (validationErrors) {
+      return error(res, "Validation Error", 400, validationErrors);
+    }
+
+    const result = await loginService(body);
+
+    // If user is not verified
+    if (result.needsVerification) {
+      return error(res, result.message, 403, {
+        phone: result.phone,
+        is_mobile_verified: false
+      });
+    }
+
+    // Success Login
+    return success(res, "Login successful", result);
+
+  } catch (err: any) {
+    return error(res, err.message || "Login failed", 401);
   }
 };

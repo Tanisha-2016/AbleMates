@@ -1,187 +1,107 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState } from 'react'
-import * as Yup from 'yup'
-import clsx from 'clsx'
-import { Link } from 'react-router-dom'
-import { useFormik } from 'formik'
-import { getUserByToken, login } from '../core/_requests'
-import { toAbsoluteUrl } from '../../../../_metronic/helpers'
-import { useAuth } from '../core/Auth'
-
-const loginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
-  password: Yup.string()
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Password is required'),
-})
-
-const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
-}
-
-/*
-  Formik+YUP+Typescript:
-  https://jaredpalmer.com/formik/docs/tutorial#getfieldprops
-  https://medium.com/@maurice.de.beijer/yup-validation-and-typescript-and-formik-6c342578a20e
-*/
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../core/_requests";
+import { useAuth } from "../core/Auth";
 
 export function Login() {
-  const [loading, setLoading] = useState(false)
-  const { saveAuth, setCurrentUser } = useAuth()
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const formik = useFormik({
-    initialValues,
-    validationSchema: loginSchema,
-    onSubmit: async (values, { setStatus, setSubmitting }) => {
-      setLoading(true)
-      try {
-        const { data: auth } = await login(values.email, values.password)
-        saveAuth(auth)
-        const { data: user } = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
-        
-      } catch (error) {
-        console.error(error)
-        saveAuth(undefined)
-        setStatus('The login details are incorrect')
-        setSubmitting(false)
-        setLoading(false)
+  const { saveAuth, setCurrentUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const resp = await login(emailOrPhone, password);
+      console.log("LOGIN RESPONSE =", resp);
+
+      // 1) SAVE TOKEN
+      saveAuth({ api_token: resp.token });
+
+      // 2) SAVE USER
+      if (resp.user) {
+        setCurrentUser(resp.user);
       }
-    },
-  })
+
+      // 3) REDIRECT
+      navigate("/dashboard");  // <---- FIXED
+
+    } catch (error) {
+      console.error(error);
+      setErrorMsg("Invalid login details");
+      saveAuth(undefined);
+    }
+
+    setLoading(false);
+  };
 
   return (
-    <form
-      className='form w-100'
-      onSubmit={formik.handleSubmit}
-      noValidate
-      id='kt_login_signin_form'
-    >
-      {/* begin::Heading */}
-      <div className='text-start mb-11'>
-        <h1 className='text-dark fw-bold mb-4'>Welcome Back!</h1>
-        <div className='text-ark fw-regular fs-6 lh-25'>Sign in to access your dashboard and continue optimizing your campaigns.</div>
+    <form className="form w-100" onSubmit={handleSubmit}>
+      <div className="text-start mb-11">
+        <h1 className="text-dark fw-bold mb-4">Welcome Back!</h1>
+        <div className="text-dark fs-6">Sign in to access your dashboard</div>
       </div>
-      {/* begin::Heading */}
 
-     
-      {/* begin::Form group */}
-      <div className='fv-row mb-8'>
-        <label htmlFor='email' className='form-label fs-6 fw-bolder text-dark'>
-          Email / Username<span className='text-danger'>*</span>
+      {errorMsg && (
+        <div className="alert alert-danger py-2">{errorMsg}</div>
+      )}
+
+      {/* Email / Phone */}
+      <div className="fv-row mb-8">
+        <label className="form-label fs-6 fw-bolder text-dark">
+          Email or Phone <span className="text-danger">*</span>
         </label>
+
         <input
-          placeholder='Enter your email or username'
-          {...formik.getFieldProps('email')}
-          className={clsx(
-            'form-control bg-transparent',
-            { 'is-invalid': formik.touched.email && formik.errors.email },
-            {
-              'is-valid': formik.touched.email && !formik.errors.email,
-            }
-          )}
-          id='email'
-          type='email'
-          name='email'
-          autoComplete='off'
+          type="text"
+          className="form-control bg-transparent"
+          placeholder="Enter your email or phone"
+          value={emailOrPhone}
+          onChange={(e) => setEmailOrPhone(e.target.value)}
+          autoComplete="off"
         />
-        {formik.touched.email && formik.errors.email && (
-          <div className='fv-plugins-message-container'>
-            <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.email}</span>
-            </div>
-          </div>
-        )}
       </div>
-      {/* end::Form group */}
 
-      {/* begin::Form group */}
-      <div className='fv-row mb-3'>
-        <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
+      {/* Password */}
+      <div className="fv-row mb-3">
+        <label className="form-label fw-bolder text-dark fs-6 mb-0">
+          Password
+        </label>
+
         <input
-          type='password'
-          autoComplete='off'
-          {...formik.getFieldProps('password')}
-          className={clsx(
-            'form-control bg-transparent',
-            {
-              'is-invalid': formik.touched.password && formik.errors.password,
-            },
-            {
-              'is-valid': formik.touched.password && !formik.errors.password,
-            }
-          )}
+          type="password"
+          className="form-control bg-transparent"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="off"
         />
-        {formik.touched.password && formik.errors.password && (
-          <div className='fv-plugins-message-container'>
-            <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.password}</span>
-            </div>
-          </div>
-        )}
       </div>
-      {/* end::Form group */}
 
-      {/* begin::Wrapper */}
-      <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
-        <div />
-
-        <div className='text-gray-500 text-center fw-semibold fs-6'>
-          <Link to='/auth/forgot-password' className='link-primary'>
-            Forgot Password ?
-          </Link>
-        </div>
-        {/* <Link to='/auth/forgot-password' className='link-primary'>
+      <div className="d-flex flex-stack mb-8">
+        <Link to="/auth/forgot-password" className="link-primary">
           Forgot Password ?
-        </Link> */}
-        {/* end::Link */}
+        </Link>
       </div>
-      {/* end::Wrapper */}
 
-      {/* begin::Action */}
-      <div className='d-grid'>
-        <button
-          type='submit'
-          id='kt_sign_in_submit'
-          className='btn btn-primary'
-          disabled={formik.isSubmitting || !formik.isValid}
-        >
-          {!loading && <span className='indicator-label'>Sign In</span>}
+      <div className="d-grid">
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {!loading && <span>Sign In</span>}
           {loading && (
-            <span className='indicator-progress' style={{ display: 'block' }}>
+            <span className="indicator-progress" style={{ display: "block" }}>
               Please wait...
-              <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              <span className="spinner-border spinner-border-sm ms-2"></span>
             </span>
           )}
         </button>
       </div>
-      <div className='text-gray-500 text-center fw-semibold fs-6 mt-7 mb-4'>
-        New Here?{' '}
-        <Link to='/auth/registration' className='link-primary'>
-          Create an Account
-        </Link>
-      </div>
-      <div>
-        <img
-          alt='Accreditation-xtY2Us5y'
-          src={toAbsoluteUrl('/media/Accreditation-xtY2Us5y.png')}
-          className='img-fluid mx-auto d-block'
-        />
-      </div>
-      {/* end::Action */}
-
-      {/* <div className='text-gray-500 text-center fw-semibold fs-6'>
-        Not a Member yet?{' '}
-        <Link to='/auth/registration' className='link-primary'>
-          Sign up
-        </Link>
-      </div> */}
     </form>
-  )
+  );
 }

@@ -2,17 +2,22 @@ import { Router } from "express";
 import { 
   registerController,
   getCountries,
-  getProvinces 
+  getProvinces ,
+  verifyMobileController,
+  loginController
 } from "./authController";
 
 const router = Router();
 
 router.post("/register", registerController);
+router.post("/verify-mobile", verifyMobileController);
+router.post("/login", loginController);
 
-// Country API
+
+// Country / State API
 router.get("/countries", getCountries);
-
-// Provinces API
 router.get("/provinces/:iso2", getProvinces);
+
+
 
 export default router;

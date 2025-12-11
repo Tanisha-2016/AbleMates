@@ -17,6 +17,9 @@ export function up(knex: Knex): Promise<void> {
     table.string("state").notNullable();
     table.string("city").notNullable();
 
+    table.boolean("is_mobile_verified").defaultTo(false);
+table.timestamp("mobile_verified_at").nullable();
+
     table.enum("role", [
       RoleEnum.SUPER_ADMIN,
       RoleEnum.NDIS_PARTICIPANT,

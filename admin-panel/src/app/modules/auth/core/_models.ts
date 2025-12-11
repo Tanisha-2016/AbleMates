@@ -64,4 +64,6 @@ export interface UserModel {
   communication?: UserCommunicationModel
   address?: UserAddressModel
   socialNetworks?: UserSocialNetworksModel
+  avatar?: string
+
 }
